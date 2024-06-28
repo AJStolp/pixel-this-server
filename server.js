@@ -24,6 +24,19 @@ app.get("/get-signature", (req, res) => {
   res.json({ timestamp, signature, api_key: cloudinary.config().api_key });
 });
 
+app.get("/list-images", async (req, res) => {
+  try {
+    const { resources } = await cloudinary.search
+      .expression("resource_type:image")
+      .sort_by("created_at", "desc")
+      .max_results(30)
+      .execute();
+    res.json(resources);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch images from Cloudinary" });
+  }
+});
+
 app.listen(3001, () => {
   console.log("Server running on port 3001");
 });
